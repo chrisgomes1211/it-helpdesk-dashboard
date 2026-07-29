@@ -4,110 +4,138 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IT Helpdesk Automation Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;background:#1a2332;color:#fff;line-height:1.5;padding:24px;min-height:100vh}
-#app{max-width:1400px;margin:0 auto}
-header{margin-bottom:28px}
-header h1{font-size:30px;font-weight:700;letter-spacing:-0.3px}
-header p{color:#9aa5b8;font-size:15px;margin-top:4px}
+body{
+  font-family:'Courier New',Courier,monospace;
+  background:#0b0014;
+  color:#e8e0f0;
+  line-height:1.5;
+  padding:24px;
+  min-height:100vh;
+  position:relative
+}
+body::before{
+  content:'';position:fixed;top:0;left:0;right:0;bottom:0;
+  background:
+    repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(168,85,247,.04) 40px,rgba(168,85,247,.04) 41px),
+    repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(168,85,247,.04) 40px,rgba(168,85,247,.04) 41px);
+  pointer-events:none;z-index:0
+}
+#app{max-width:1400px;margin:0 auto;position:relative;z-index:1}
+header{margin-bottom:32px;text-align:center}
+header h1{
+  font-family:'Press Start 2P',monospace;font-size:18px;color:#00f0ff;
+  text-shadow:0 0 10px rgba(0,240,255,.5),0 0 30px rgba(0,240,255,.2);
+  letter-spacing:1px;line-height:1.6
+}
+header p{font-family:'VT323',monospace;font-size:18px;color:#a855f7;margin-top:8px;text-shadow:0 0 8px rgba(168,85,247,.3)}
 
 #upload-section{margin-bottom:28px}
-#dropzone{border:2px dashed #3d4a6b;border-radius:10px;padding:36px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;background:rgba(255,255,255,.03)}
-#dropzone:hover,#dropzone.dragover{border-color:#4A90D9;background:rgba(74,144,217,.08)}
-#dropzone p{font-size:15px;color:#9aa5b8}
-#dropzone .dz-icon{font-size:32px;margin-bottom:8px;display:block}
-#data-source{color:#6b7a99;font-size:12px;margin-top:8px;text-align:center}
+#dropzone{
+  border:2px dashed #2a1a4a;border-radius:8px;padding:32px;text-align:center;
+  cursor:pointer;transition:all .2s;background:rgba(21,8,40,.5)
+}
+#dropzone:hover,#dropzone.dragover{border-color:#00f0ff;box-shadow:0 0 20px rgba(0,240,255,.15);background:rgba(0,240,255,.05)}
+#dropzone p{font-size:14px;color:#8b7ab0}
+#dropzone .dz-icon{font-size:28px;margin-bottom:6px;display:block}
+#data-source{color:#6b5a88;font-size:12px;margin-top:8px;text-align:center}
 
 #stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
-.stat-card{background:#2E3A59;border-radius:10px;padding:22px 16px;text-align:center;position:relative;overflow:hidden}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
-.stat-card:nth-child(1)::before{background:#4A90D9}
-.stat-card:nth-child(2)::before{background:#52c41a}
-.stat-card:nth-child(3)::before{background:#ff4d4f}
-.stat-card:nth-child(4)::before{background:#13c2c2}
-.stat-value{display:block;font-size:34px;font-weight:700;line-height:1.1}
-.stat-label{display:block;color:#9aa5b8;font-size:12px;margin-top:6px;text-transform:uppercase;letter-spacing:.8px}
+.stat-card{
+  background:#150828;border:1px solid #2a1a4a;border-radius:8px;
+  padding:20px 16px;text-align:center;position:relative;overflow:hidden;
+  box-shadow:0 0 15px rgba(168,85,247,.08);transition:box-shadow .2s
+}
+.stat-card:hover{box-shadow:0 0 25px rgba(168,85,247,.2)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;box-shadow:0 0 10px currentColor}
+.stat-card:nth-child(1)::before{background:#00f0ff;color:#00f0ff}
+.stat-card:nth-child(2)::before{background:#00ff88;color:#00ff88}
+.stat-card:nth-child(3)::before{background:#ff0044;color:#ff0044}
+.stat-card:nth-child(4)::before{background:#ffd700;color:#ffd700}
+.stat-value{display:block;font-family:'VT323',monospace;font-size:38px;color:#e8e0f0;line-height:1}
+.stat-label{display:block;font-size:11px;color:#6b5a88;margin-top:6px;text-transform:uppercase;letter-spacing:1.5px}
 
 #charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-.chart-card{background:#2E3A59;border-radius:10px;padding:20px}
-.chart-card h2{font-size:15px;font-weight:600;margin-bottom:16px;color:#c8d0dc}
+.chart-card{background:#150828;border:1px solid #2a1a4a;border-radius:8px;padding:20px;box-shadow:0 0 15px rgba(168,85,247,.08)}
+.chart-card h2{font-family:'VT323',monospace;font-size:18px;color:#a855f7;margin-bottom:16px;text-shadow:0 0 8px rgba(168,85,247,.2)}
 .chart-card.full{grid-column:1/-1;margin-bottom:0}
 .chart-card .chart-wrap{position:relative;height:260px}
 
-#boundary-panel{background:#2E3A59;border-radius:10px;padding:24px;margin-bottom:16px}
-#boundary-panel h2{font-size:17px;font-weight:600;margin-bottom:6px}
-.caption{color:#9aa5b8;font-size:13px;line-height:1.7;margin-bottom:20px}
-.caption strong{color:#faad14}
+#boundary-panel{background:#150828;border:1px solid #2a1a4a;border-radius:8px;padding:24px;margin-bottom:16px;box-shadow:0 0 15px rgba(168,85,247,.08)}
+#boundary-panel h2{font-family:'VT323',monospace;font-size:22px;color:#a855f7;margin-bottom:6px;text-shadow:0 0 8px rgba(168,85,247,.2)}
+.caption{color:#8b7ab0;font-size:13px;line-height:1.7;margin-bottom:20px}
+.caption strong{color:#ffd700}
 .boundary-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
-.boundary-stat{text-align:center;background:#1a2332;border-radius:8px;padding:16px}
-.boundary-count{display:block;font-size:28px;font-weight:700}
-.boundary-label{display:block;font-size:12px;color:#9aa5b8;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.boundary-stat{text-align:center;background:rgba(11,0,20,.5);border:1px solid #2a1a4a;border-radius:8px;padding:16px}
+.boundary-count{display:block;font-family:'VT323',monospace;font-size:32px;color:#00f0ff;text-shadow:0 0 10px rgba(0,240,255,.3)}
+.boundary-label{display:block;font-size:11px;color:#6b5a88;margin-top:4px;text-transform:uppercase;letter-spacing:1px}
 #boundary-table-wrapper{overflow-x:auto}
 #boundary-table{width:100%;border-collapse:collapse;font-size:13px;min-width:500px}
-#boundary-table th{text-align:left;padding:10px 12px;border-bottom:1px solid #3d4a6b;color:#9aa5b8;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
-#boundary-table td{padding:10px 12px;border-bottom:1px solid rgba(61,74,107,.4)}
-#boundary-table tr.disagree td:last-child{color:#faad14;font-weight:700}
-#boundary-table tr.agree td:last-child{color:#52c41a;font-weight:700}
-.boundary-badge{padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;display:inline-block}
-.boundary-badge.llm{background:rgba(74,144,217,.2);color:#4A90D9}
-.boundary-badge.fallback{background:rgba(250,173,20,.15);color:#faad14}
-#boundary-empty{color:#6b7a99;text-align:center;padding:24px;display:none}
+#boundary-table th{text-align:left;padding:10px 12px;border-bottom:1px solid #2a1a4a;color:#6b5a88;font-size:11px;text-transform:uppercase;letter-spacing:1px}
+#boundary-table td{padding:10px 12px;border-bottom:1px solid rgba(42,26,74,.4)}
+#boundary-table tr.disagree td:last-child{color:#ffd700;font-weight:700}
+#boundary-table tr.agree td:last-child{color:#00ff88;font-weight:700}
+.boundary-badge{padding:2px 8px;border-radius:4px;display:inline-block;font-family:'VT323',monospace;font-size:13px}
+.boundary-badge.llm{background:rgba(0,240,255,.12);color:#00f0ff;box-shadow:0 0 8px rgba(0,240,255,.15)}
+.boundary-badge.fallback{background:rgba(255,45,149,.12);color:#ff2d95;box-shadow:0 0 8px rgba(255,45,149,.15)}
+#boundary-empty{color:#6b5a88;text-align:center;padding:24px;display:none}
 
-#simulator{background:#2E3A59;border-radius:10px;padding:24px;margin-bottom:16px}
-#simulator h2{font-size:17px;font-weight:600;margin-bottom:6px}
+#simulator{background:#150828;border:1px solid #2a1a4a;border-radius:8px;padding:24px;margin-bottom:16px;box-shadow:0 0 15px rgba(168,85,247,.08)}
+#simulator h2{font-family:'VT323',monospace;font-size:22px;color:#a855f7;margin-bottom:6px;text-shadow:0 0 8px rgba(168,85,247,.2)}
 .sim-controls{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:24px}
-.sim-slider label{display:block;font-size:14px;margin-bottom:10px;color:#c8d0dc}
-.sim-slider label span{font-weight:700;color:#fff}
-.sim-slider input[type=range]{width:100%;accent-color:#4A90D9;height:6px;cursor:pointer}
+.sim-slider label{display:block;font-size:14px;margin-bottom:10px;color:#8b7ab0}
+.sim-slider label span{font-family:'VT323',monospace;font-size:18px;color:#00f0ff}
+.sim-slider input[type=range]{width:100%;accent-color:#00f0ff;height:6px;cursor:pointer}
 .sim-results{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
-.sim-result{text-align:center;background:#1a2332;border-radius:8px;padding:18px 12px}
-.sim-result-value{display:block;font-size:26px;font-weight:700}
-.sim-result-label{display:block;font-size:11px;color:#9aa5b8;margin-top:4px;text-transform:uppercase;letter-spacing:.4px}
-.sim-comparison{background:#1a2332;border-radius:8px;padding:20px}
+.sim-result{text-align:center;background:rgba(11,0,20,.5);border:1px solid #2a1a4a;border-radius:8px;padding:18px 12px}
+.sim-result-value{display:block;font-family:'VT323',monospace;font-size:30px;color:#00ff88;text-shadow:0 0 10px rgba(0,255,136,.3)}
+.sim-result-label{display:block;font-size:11px;color:#6b5a88;margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+.sim-comparison{background:rgba(11,0,20,.5);border:1px solid #2a1a4a;border-radius:8px;padding:20px}
 .sim-bar-group{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .sim-bar-group:last-child{margin-bottom:0}
-.sim-bar-label{width:150px;font-size:13px;color:#9aa5b8;flex-shrink:0}
-.sim-bar-track{flex:1;height:30px;background:#0f1621;border-radius:6px;overflow:hidden}
+.sim-bar-label{width:150px;font-size:13px;color:#8b7ab0;flex-shrink:0}
+.sim-bar-track{flex:1;height:30px;background:#0b0014;border-radius:6px;overflow:hidden;border:1px solid #2a1a4a}
 .sim-bar{height:100%;border-radius:6px;transition:width .35s ease;min-width:0}
-.sim-bar-before{background:linear-gradient(90deg,#ff4d4f,#ff7a45)}
-.sim-bar-after{background:linear-gradient(90deg,#52c41a,#73d13d)}
-.sim-bar-amount{width:100px;text-align:right;font-weight:700;font-size:15px;flex-shrink:0}
-.sim-note{color:#6b7a99;font-size:11px;text-align:center;margin-top:12px}
+.sim-bar-before{background:linear-gradient(90deg,#ff0044,#ff2d95);box-shadow:0 0 10px rgba(255,0,68,.3)}
+.sim-bar-after{background:linear-gradient(90deg,#00ff88,#00f0ff);box-shadow:0 0 10px rgba(0,255,136,.3)}
+.sim-bar-amount{width:100px;text-align:right;font-family:'VT323',monospace;font-size:18px;color:#e8e0f0;flex-shrink:0}
+.sim-note{color:#6b5a88;font-size:11px;text-align:center;margin-top:12px}
 
-#table-section{background:#2E3A59;border-radius:10px;padding:24px;margin-bottom:24px}
-#table-section h2{font-size:17px;font-weight:600;margin-bottom:16px}
+#table-section{background:#150828;border:1px solid #2a1a4a;border-radius:8px;padding:24px;margin-bottom:24px;box-shadow:0 0 15px rgba(168,85,247,.08)}
+#table-section h2{font-family:'VT323',monospace;font-size:22px;color:#a855f7;margin-bottom:16px;text-shadow:0 0 8px rgba(168,85,247,.2)}
 #table-controls{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
-#search-box{flex:1;min-width:200px;padding:10px 14px;border-radius:6px;border:1px solid #3d4a6b;background:#1a2332;color:#fff;font-size:14px;outline:none;transition:border-color .2s}
-#search-box:focus{border-color:#4A90D9}
-#search-box::placeholder{color:#6b7a99}
+#search-box{flex:1;min-width:200px;padding:10px 14px;border-radius:6px;border:1px solid #2a1a4a;background:rgba(11,0,20,.5);color:#e8e0f0;font-size:14px;outline:none;transition:border-color .2s}
+#search-box:focus{border-color:#00f0ff;box-shadow:0 0 10px rgba(0,240,255,.1)}
+#search-box::placeholder{color:#6b5a88}
 .filter-chips{display:flex;gap:6px;flex-wrap:wrap}
-.filter-chip{padding:5px 12px;border-radius:20px;border:1px solid #3d4a6b;background:transparent;color:#9aa5b8;font-size:12px;cursor:pointer;transition:all .15s;user-select:none}
-.filter-chip:hover{border-color:#6b7a99;color:#fff}
-.filter-chip.active{background:#4A90D9;border-color:#4A90D9;color:#fff}
+.filter-chip{padding:5px 12px;border-radius:20px;border:1px solid #2a1a4a;background:transparent;color:#8b7ab0;font-size:12px;cursor:pointer;transition:all .15s;user-select:none}
+.filter-chip:hover{border-color:#6b5a88;color:#e8e0f0}
+.filter-chip.active{background:#a855f7;border-color:#a855f7;color:#fff;box-shadow:0 0 10px rgba(168,85,247,.3)}
 .filter-chip-group{display:flex;gap:6px;align-items:center}
-.filter-chip-group-label{font-size:11px;color:#6b7a99;text-transform:uppercase;letter-spacing:.4px;margin-right:4px}
-.clear-filters{font-size:12px;color:#4A90D9;cursor:pointer;background:none;border:none;padding:4px 8px;border-radius:4px}
-.clear-filters:hover{background:rgba(74,144,217,.1)}
+.filter-chip-group-label{font-size:10px;color:#6b5a88;text-transform:uppercase;letter-spacing:1px;margin-right:4px}
+.clear-filters{font-size:12px;color:#00f0ff;cursor:pointer;background:none;border:none;padding:4px 8px;border-radius:4px}
+.clear-filters:hover{background:rgba(0,240,255,.1)}
 #table-wrapper{overflow-x:auto}
 #ticket-table{width:100%;border-collapse:collapse;font-size:13px;min-width:750px}
-#ticket-table th{text-align:left;padding:12px;border-bottom:2px solid #3d4a6b;color:#9aa5b8;font-size:11px;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;user-select:none;white-space:nowrap}
-#ticket-table th:hover{color:#fff}
-#ticket-table th .sort-arrow{display:inline-block;margin-left:4px;color:#6b7a99;font-size:10px}
-#ticket-table th.sorted-asc .sort-arrow::after{content:'\25B2';color:#4A90D9}
-#ticket-table th.sorted-desc .sort-arrow::after{content:'\25BC';color:#4A90D9}
-#ticket-table td{padding:10px 12px;border-bottom:1px solid rgba(61,74,107,.3)}
-#ticket-table tbody tr:hover{background:rgba(255,255,255,.03)}
-.prio-Low{color:#8c8c8c;font-weight:600}
-.prio-Medium{color:#faad14;font-weight:600}
-.prio-High{color:#ff7a45;font-weight:600}
-.prio-Critical{color:#ff4d4f;font-weight:600}
+#ticket-table th{text-align:left;padding:12px;border-bottom:2px solid #2a1a4a;color:#6b5a88;font-size:11px;text-transform:uppercase;letter-spacing:1px;cursor:pointer;user-select:none;white-space:nowrap}
+#ticket-table th:hover{color:#e8e0f0}
+#ticket-table th .sort-arrow{display:inline-block;margin-left:4px;color:#6b5a88;font-size:10px}
+#ticket-table th.sorted-asc .sort-arrow::after{content:'\25B2';color:#00f0ff}
+#ticket-table th.sorted-desc .sort-arrow::after{content:'\25BC';color:#00f0ff}
+#ticket-table td{padding:10px 12px;border-bottom:1px solid rgba(42,26,74,.3)}
+#ticket-table tbody tr:hover{background:rgba(168,85,247,.06)}
+.prio-Low{color:#8b7ab0;font-weight:600}
+.prio-Medium{color:#ffd700;font-weight:600}
+.prio-High{color:#ff7a00;font-weight:600}
+.prio-Critical{color:#ff0044;font-weight:600}
 .status-badge{padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;display:inline-block}
-.status-Auto-Resolved{background:rgba(82,196,26,.15);color:#52c41a}
-.status-Open{background:rgba(255,77,79,.12);color:#ff7a45}
-.table-empty{text-align:center;padding:48px 16px;color:#6b7a99;font-size:14px}
+.status-Auto-Resolved{background:rgba(0,255,136,.12);color:#00ff88;box-shadow:0 0 8px rgba(0,255,136,.1)}
+.status-Open{background:rgba(255,0,68,.12);color:#ff2d95;box-shadow:0 0 8px rgba(255,0,68,.1)}
+.table-empty{text-align:center;padding:48px 16px;color:#6b5a88;font-size:14px}
 
 @media(max-width:768px){
   body{padding:12px}
@@ -117,25 +145,23 @@ header p{color:#9aa5b8;font-size:15px;margin-top:4px}
   .sim-results{grid-template-columns:1fr}
   .boundary-stats{grid-template-columns:1fr}
   .sim-bar-label{width:100px;font-size:11px}
-  .sim-bar-amount{width:70px;font-size:12px}
-  header h1{font-size:22px}
+  .sim-bar-amount{width:70px;font-size:14px}
+  header h1{font-size:14px}
 }
-@media(max-width:480px){
-  #stats{grid-template-columns:1fr}
-}
+@media(max-width:480px){#stats{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div id="app">
 
 <header>
-  <h1>IT Helpdesk Automation Dashboard</h1>
-  <p>Ticket intelligence, RPA boundary analysis &amp; automation impact simulation</p>
+  <h1>IT HELPDESK AUTOMATION</h1>
+  <p>Ticket Intelligence &middot; RPA Boundary Analysis &middot; Impact Simulation</p>
 </header>
 
 <section id="upload-section">
   <div id="dropzone">
-    <span class="dz-icon">&#128229;</span>
+    <span class="dz-icon">&#9889;</span>
     <p>Drop an <strong>.xlsx</strong> file here, or click to browse</p>
     <input type="file" id="file-input" accept=".xlsx" hidden>
   </div>
@@ -161,11 +187,11 @@ header p{color:#9aa5b8;font-size:15px;margin-top:4px}
 <section id="boundary-panel">
   <h2>RPA / AI Boundary Analysis</h2>
   <p class="caption">
-    This panel compares tickets classified by the <strong>LLM</strong> (OpenAI / gpt-4o-mini) 
-    against those classified by <strong>keyword-based fallback rules</strong>. 
-    For subject lines processed by both methods, the assigned categories are shown side by side. 
-    <strong>Yellow-highlighted rows indicate disagreement</strong> — subjects where the keyword 
-    classifier could not infer the correct category from natural language context, 
+    This panel compares tickets classified by the <strong>LLM</strong> (OpenAI / gpt-4o-mini)
+    against those classified by <strong>keyword-based fallback rules</strong>.
+    For subject lines processed by both methods, the assigned categories are shown side by side.
+    <strong>Yellow-highlighted rows indicate disagreement</strong> — subjects where the keyword
+    classifier could not infer the correct category from natural language context,
     while the LLM could.
   </p>
   <div class="boundary-stats">
@@ -185,7 +211,7 @@ header p{color:#9aa5b8;font-size:15px;margin-top:4px}
 <section id="simulator">
   <h2>Manual vs Automated &mdash; Impact Simulator</h2>
   <p class="caption">
-    Auto-resolution rate (<span id="sim-rate-display">0%</span>) is derived from the loaded data. 
+    Auto-resolution rate (<span id="sim-rate-display">0%</span>) is derived from the loaded data.
     Adjust the sliders to model monthly savings at scale.
   </p>
   <div class="sim-controls">
@@ -338,30 +364,24 @@ function handleFile(file) {
 function showMessage(msg, isError) {
   var el = document.getElementById('data-source');
   el.textContent = msg;
-  el.style.color = isError ? '#ff7a45' : '#52c41a';
+  el.style.color = isError ? '#ff2d95' : '#00ff88';
   setTimeout(function() { el.style.color = ''; }, 4000);
 }
 
-// Drop zone setup
 (function() {
   var dz = document.getElementById('dropzone');
   var fi = document.getElementById('file-input');
-
   dz.addEventListener('click', function() { fi.click(); });
-
   fi.addEventListener('change', function() {
     if (fi.files.length) handleFile(fi.files[0]);
   });
-
   dz.addEventListener('dragover', function(e) {
     e.preventDefault();
     dz.classList.add('dragover');
   });
-
   dz.addEventListener('dragleave', function() {
     dz.classList.remove('dragover');
   });
-
   dz.addEventListener('drop', function(e) {
     e.preventDefault();
     dz.classList.remove('dragover');
@@ -378,7 +398,6 @@ function computeStats(tickets) {
   var autoRate = total > 0 ? (autoResolved / total * 100) : 0;
   var critical = tickets.filter(function(t) { return t.Priority === 'Critical'; }).length;
 
-  // Median response time (Received -> Acknowledged) in minutes
   var diffs = [];
   tickets.forEach(function(t) {
     if (t['Received Time'] && t['Acknowledged Time']) {
@@ -423,10 +442,10 @@ function renderDonut(tickets) {
     else counts[t.Category] = (counts[t.Category] || 0) + 1;
   });
 
-  var colors = {'Password Reset':'#4A90D9','Software Issue':'#52c41a','Hardware Issue':'#faad14','Network Issue':'#ff4d4f','Access Request':'#13c2c2'};
+  var colors = {'Password Reset':'#00f0ff','Software Issue':'#a855f7','Hardware Issue':'#ffd700','Network Issue':'#ff2d95','Access Request':'#00ff88'};
   var labels = cats.filter(function(c) { return counts[c] > 0; });
   var data = labels.map(function(c) { return counts[c]; });
-  var bgColors = labels.map(function(c) { return colors[c] || '#6b7a99'; });
+  var bgColors = labels.map(function(c) { return colors[c] || '#6b5a88'; });
 
   if (chartInstances.donut) chartInstances.donut.destroy();
   var ctx = document.getElementById('donut-chart').getContext('2d');
@@ -436,7 +455,7 @@ function renderDonut(tickets) {
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'right', labels: { color: '#c8d0dc', padding: 12, font: { size: 12 } } }
+        legend: { position: 'right', labels: { color: '#8b7ab0', padding: 12, font: { size: 12 } } }
       }
     }
   });
@@ -453,7 +472,7 @@ function renderBar(tickets) {
     if (counts.hasOwnProperty(t.Priority)) counts[t.Priority]++;
   });
 
-  var colors = {'Low':'#8c8c8c','Medium':'#faad14','High':'#ff7a45','Critical':'#ff4d4f'};
+  var colors = {'Low':'#8b7ab0','Medium':'#ffd700','High':'#ff7a00','Critical':'#ff0044'};
   var data = order.map(function(p) { return counts[p]; });
   var bgColors = order.map(function(p) { return colors[p]; });
 
@@ -469,12 +488,10 @@ function renderBar(tickets) {
       responsive: true, maintainAspectRatio: false,
       indexAxis: 'y',
       scales: {
-        x: { grid: { color: 'rgba(255,255,255,.06)' }, ticks: { color: '#9aa5b8' } },
-        y: { grid: { display: false }, ticks: { color: '#c8d0dc', font: { weight: 'bold' } } }
+        x: { grid: { color: 'rgba(168,85,247,.08)' }, ticks: { color: '#8b7ab0' } },
+        y: { grid: { display: false }, ticks: { color: '#e8e0f0', font: { weight: 'bold' } } }
       },
-      plugins: {
-        legend: { display: false }
-      }
+      plugins: { legend: { display: false } }
     }
   });
 }
@@ -500,18 +517,18 @@ function renderStackedBar(tickets) {
     data: {
       labels: teams,
       datasets: [
-        { label: 'Auto-Resolved', data: teams.map(function(t) { return resolved[t]; }), backgroundColor: '#52c41a', borderRadius: 4 },
-        { label: 'Open', data: teams.map(function(t) { return openCount[t]; }), backgroundColor: '#ff7a45', borderRadius: 4 }
+        { label: 'Auto-Resolved', data: teams.map(function(t) { return resolved[t]; }), backgroundColor: '#00ff88', borderRadius: 4 },
+        { label: 'Open', data: teams.map(function(t) { return openCount[t]; }), backgroundColor: '#ff2d95', borderRadius: 4 }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       scales: {
-        x: { stacked: true, grid: { display: false }, ticks: { color: '#c8d0dc' } },
-        y: { stacked: true, grid: { color: 'rgba(255,255,255,.06)' }, ticks: { color: '#9aa5b8' } }
+        x: { stacked: true, grid: { display: false }, ticks: { color: '#8b7ab0' } },
+        y: { stacked: true, grid: { color: 'rgba(168,85,247,.08)' }, ticks: { color: '#8b7ab0' } }
       },
       plugins: {
-        legend: { position: 'top', labels: { color: '#c8d0dc', padding: 16, font: { size: 12 } } }
+        legend: { position: 'top', labels: { color: '#8b7ab0', padding: 16, font: { size: 12 } } }
       }
     }
   });
@@ -521,7 +538,6 @@ function renderStackedBar(tickets) {
 // PANEL: RPA / AI Boundary Analysis
 // ===================================================================
 function renderBoundary(tickets) {
-  // Classify sources: LLM-classified vs keyword-fallback-classified
   var llm = tickets.filter(function(t) {
     var s = (t.Source || '').toLowerCase();
     return s.indexOf('gpt') !== -1 || s.indexOf('openai') !== -1;
@@ -534,7 +550,6 @@ function renderBoundary(tickets) {
   document.getElementById('llm-count').textContent = llm.length;
   document.getElementById('fallback-count').textContent = fallback.length;
 
-  // Find subjects processed by both methods
   var llmSubjects = {};
   llm.forEach(function(t) {
     var subj = t.Subject;
@@ -608,7 +623,6 @@ function renderSimulator(tickets) {
   function update() {
     var volume = parseInt(document.getElementById('volume-slider').value);
     var costPerTicket = parseFloat(document.getElementById('cost-slider').value);
-
     document.getElementById('volume-display').textContent = volume;
     document.getElementById('cost-display').textContent = costPerTicket;
 
@@ -625,11 +639,8 @@ function renderSimulator(tickets) {
     document.getElementById('api-cost').textContent = '$' + apiCost.toFixed(2);
 
     var maxBar = Math.max(beforeCost, afterCost, 1);
-    var pctBefore = (beforeCost / maxBar) * 100;
-    var pctAfter = (afterCost / maxBar) * 100;
-
-    document.getElementById('bar-before').style.width = pctBefore + '%';
-    document.getElementById('bar-after').style.width = pctAfter + '%';
+    document.getElementById('bar-before').style.width = (beforeCost / maxBar * 100) + '%';
+    document.getElementById('bar-after').style.width = (afterCost / maxBar * 100) + '%';
     document.getElementById('amount-before').textContent = '$' + beforeCost.toFixed(0);
     document.getElementById('amount-after').textContent = '$' + afterCost.toFixed(0);
   }
@@ -645,7 +656,6 @@ function renderSimulator(tickets) {
 var TABLE_COLUMNS = ['Ticket ID','Received Time','Sender','Subject','Category','Priority','Team','Status'];
 
 function renderTable(tickets) {
-  // Build filter chips
   var chipContainer = document.getElementById('filter-chips');
   chipContainer.innerHTML = '';
 
@@ -678,7 +688,6 @@ function renderTable(tickets) {
     chipContainer.appendChild(wrapper);
   });
 
-  // Table header
   var thead = document.getElementById('table-header');
   thead.innerHTML = '';
   TABLE_COLUMNS.forEach(function(col) {
@@ -698,9 +707,7 @@ function renderTable(tickets) {
     thead.appendChild(th);
   });
 
-  // Clear filters button
-  var clearBtn = document.getElementById('clear-filters');
-  clearBtn.addEventListener('click', function() {
+  document.getElementById('clear-filters').addEventListener('click', function() {
     document.querySelectorAll('.filter-chip.active').forEach(function(c) { c.classList.remove('active'); });
     activeFilters = { category: [], priority: [], status: [] };
     document.getElementById('search-box').value = '';
@@ -709,7 +716,6 @@ function renderTable(tickets) {
     applySortAndFilter();
   });
 
-  // Search
   document.getElementById('search-box').addEventListener('input', function() {
     searchTerm = this.value.toLowerCase();
     applySortAndFilter();
@@ -733,23 +739,17 @@ function updateFilters() {
 }
 
 function applySortAndFilter() {
-  // Filter
   var filtered = allTickets.filter(function(t) {
-    // Search
     if (searchTerm) {
       var haystack = (t['Ticket ID'] + ' ' + t.Subject + ' ' + t.Sender).toLowerCase();
       if (haystack.indexOf(searchTerm) === -1) return false;
     }
-    // Category
     if (activeFilters.category.length && activeFilters.category.indexOf(t.Category) === -1) return false;
-    // Priority
     if (activeFilters.priority.length && activeFilters.priority.indexOf(t.Priority) === -1) return false;
-    // Status
     if (activeFilters.status.length && activeFilters.status.indexOf(t.Status) === -1) return false;
     return true;
   });
 
-  // Sort
   if (sortConfig.key && sortConfig.dir) {
     filtered.sort(function(a, b) {
       var va = a[sortConfig.key] || '';
@@ -759,7 +759,6 @@ function applySortAndFilter() {
         vb = new Date(vb).getTime();
         return sortConfig.dir === 'asc' ? va - vb : vb - va;
       }
-      // Priority sort by ordinal
       if (sortConfig.key === 'Priority') {
         var order = { 'Low':1, 'Medium':2, 'High':3, 'Critical':4 };
         va = order[va] || 0;
@@ -771,7 +770,6 @@ function applySortAndFilter() {
     });
   }
 
-  // Update header arrows
   document.querySelectorAll('#table-header th').forEach(function(th) {
     th.classList.remove('sorted-asc', 'sorted-desc');
     if (th.dataset.sort === sortConfig.key && sortConfig.dir) {
@@ -832,7 +830,6 @@ function updateDashboard() {
   renderTable(allTickets);
 }
 
-// Bootstrap
 loadSnapshot();
 </script>
 </body>
