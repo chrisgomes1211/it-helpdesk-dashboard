@@ -91,7 +91,7 @@ header p{font-family:'VT323',monospace;font-size:18px;color:#a855f7;margin-top:6
 .caption{color:#8b7ab0;font-size:12px;line-height:1.6;margin-bottom:14px}
 .caption strong{color:#ffd700}
 .pipeline-wrap{text-align:center;margin-bottom:16px;background:rgba(11,0,20,.5);border-radius:8px;padding:16px 20px;border:1px solid rgba(42,26,74,.3)}
-.pipeline-svg{max-width:520px;width:100%;height:88px;display:block;margin:0 auto}
+.pipeline-svg{max-width:540px;width:100%;height:88px;display:block;margin:0 auto}
 .pipe-line{stroke-linecap:round;stroke-linejoin:round}
 .pipe-llm{stroke:#00f0ff;stroke-width:2}
 .pipe-fb{stroke:#ff2d95;stroke-width:2}
@@ -99,19 +99,19 @@ header p{font-family:'VT323',monospace;font-size:18px;color:#a855f7;margin-top:6
 .pipe-merge-b{stroke:#ff2d95;stroke-width:1.5;opacity:.35}
 .pipe-merge-out{stroke:#a855f7;stroke-width:2}
 .pipe-disagree{stroke:#ffd700;stroke-width:2;stroke-dasharray:6,5;animation:pipe-dash .6s linear infinite}
-.pipe-node{animation:pipe-pulse 2.5s ease-in-out infinite;transform-origin:center;transform-box:fill-box}
-.pipe-node-llm{fill:#00f0ff;filter:drop-shadow(0 0 4px #00f0ff)}
-.pipe-node-fb{fill:#ff2d95;filter:drop-shadow(0 0 4px #ff2d95)}
-.pipe-node-merge{fill:#a855f7;filter:drop-shadow(0 0 6px #a855f7)}
-.pipe-node-disagree{fill:#ffd700;filter:drop-shadow(0 0 6px #ffd700);animation-delay:.3s}
-.pipe-text{font-family:'VT323',monospace;font-size:12px;font-weight:400}
+.pipe-node{animation:pipe-pulse 2.5s ease-in-out infinite}
+.pipe-node-llm{fill:#00f0ff;filter:drop-shadow(0 0 5px #00f0ff)}
+.pipe-node-fb{fill:#ff2d95;filter:drop-shadow(0 0 5px #ff2d95)}
+.pipe-node-merge{fill:#a855f7;filter:drop-shadow(0 0 8px #a855f7)}
+.pipe-node-disagree{fill:#ffd700;filter:drop-shadow(0 0 8px #ffd700);animation-delay:.3s}
+.pipe-text{font-family:'VT323',monospace;font-size:12px;font-weight:400;letter-spacing:.3px}
 .pipe-text-llm{fill:#00f0ff}
 .pipe-text-fb{fill:#ff2d95}
 .pipe-text-merge{fill:#a855f7}
 .pipe-text-disagree{fill:#ffd700}
 @keyframes pipe-pulse{
-  0%,100%{r:5;opacity:.85}
-  50%{r:7;opacity:1}
+  0%,100%{opacity:.7}
+  50%{opacity:1}
 }
 @keyframes pipe-dash{
   0%{stroke-dashoffset:11}
@@ -373,28 +373,32 @@ header p{font-family:'VT323',monospace;font-size:18px;color:#a855f7;margin-top:6
   </p>
 
   <div class="pipeline-wrap">
-    <svg class="pipeline-svg" viewBox="0 0 520 88">
-      <g class="pipe-line pipe-llm"><line x1="22" y1="28" x2="110" y2="28"/></g>
-      <g class="pipe-line pipe-merge-t"><line x1="128" y1="28" x2="156" y2="48"/></g>
-      <circle class="pipe-node pipe-node-llm" cx="22" cy="28" r="5"/>
-      <text class="pipe-text pipe-text-llm" x="34" y="32">LLM Classifier</text>
+    <svg class="pipeline-svg" viewBox="0 0 540 88">
+      <!-- Top row: LLM -->
+      <circle class="pipe-node pipe-node-llm" cx="18" cy="28" r="5"/>
+      <text class="pipe-text pipe-text-llm" x="30" y="18">LLM Classifier</text>
+      <g class="pipe-line pipe-llm"><line x1="18" y1="28" x2="130" y2="28"/></g>
+      <g class="pipe-line pipe-merge-t"><line x1="130" y1="28" x2="162" y2="48"/></g>
 
-      <g class="pipe-line pipe-fb"><line x1="22" y1="68" x2="110" y2="68"/></g>
-      <g class="pipe-line pipe-merge-b"><line x1="128" y1="68" x2="156" y2="48"/></g>
-      <circle class="pipe-node pipe-node-fb" cx="22" cy="68" r="5"/>
-      <text class="pipe-text pipe-text-fb" x="34" y="72">Keyword Fallback</text>
+      <!-- Bottom row: Fallback -->
+      <circle class="pipe-node pipe-node-fb" cx="18" cy="66" r="5"/>
+      <text class="pipe-text pipe-text-fb" x="30" y="78">Keyword Fallback</text>
+      <g class="pipe-line pipe-fb"><line x1="18" y1="66" x2="130" y2="66"/></g>
+      <g class="pipe-line pipe-merge-b"><line x1="130" y1="66" x2="162" y2="48"/></g>
 
-      <circle class="pipe-node pipe-node-merge" cx="172" cy="48" r="6"/>
-      <g class="pipe-line pipe-merge-out"><line x1="178" y1="48" x2="250" y2="48"/></g>
-      <text class="pipe-text pipe-text-merge" x="190" y="52">Compare Categories</text>
+      <!-- Merge node -->
+      <circle class="pipe-node pipe-node-merge" cx="168" cy="48" r="6"/>
+      <g class="pipe-line pipe-merge-out"><line x1="174" y1="48" x2="272" y2="48"/></g>
+      <text class="pipe-text pipe-text-merge" x="188" y="38">Compare Categories</text>
 
-      <g class="pipe-line pipe-disagree"><line x1="270" y1="48" x2="340" y2="48"/></g>
-      <circle class="pipe-node pipe-node-disagree" cx="270" cy="48" r="5"/>
-      <text class="pipe-text pipe-text-disagree" x="282" y="52">Disagreement?</text>
+      <!-- Disagreement check -->
+      <g class="pipe-line pipe-disagree"><line x1="272" y1="48" x2="342" y2="48"/></g>
+      <circle class="pipe-node pipe-node-disagree" cx="272" cy="48" r="5"/>
+      <text class="pipe-text pipe-text-disagree" x="286" y="62">Disagreement?</text>
 
-      <text x="356" y="34" fill="#6b5a88" font-size="9" font-family="monospace">Same subject</text>
-      <text x="356" y="48" fill="#6b5a88" font-size="9" font-family="monospace">processed by</text>
-      <text x="356" y="62" fill="#6b5a88" font-size="9" font-family="monospace">both pipelines</text>
+      <!-- Right annotation -->
+      <text x="360" y="34" fill="#6b5a88" font-size="9" font-family="monospace">Same subject</text>
+      <text x="360" y="48" fill="#6b5a88" font-size="9" font-family="monospace">both pipelines</text>
     </svg>
   </div>
 
